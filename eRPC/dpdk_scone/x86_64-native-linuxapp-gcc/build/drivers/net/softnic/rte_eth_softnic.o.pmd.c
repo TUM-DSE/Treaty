@@ -1,0 +1,1 @@
+const char net_softnic_pmd_info[] __attribute__((used)) = "PMD_INFO_STRING= {\"name\" : \"net_softnic\", \"params\" : \"soft_tm=on|off soft_tm_rate=<int> soft_tm_nb_queues=<int> soft_tm_qsize0=<int> soft_tm_qsize1=<int> soft_tm_qsize2=<int> soft_tm_qsize3=<int> soft_tm_enq_bsz=<int> soft_tm_deq_bsz=<int> hard_name=<string> hard_tx_queue_id=<int>\", \"pci_ids\" : []}";

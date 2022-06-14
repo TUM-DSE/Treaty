@@ -1,0 +1,1 @@
+cmd_librte_pmd_octeontx2_event.a = ar crDs librte_pmd_octeontx2_event.a otx2_worker_dual.o otx2_worker.o otx2_tim_worker.o otx2_evdev.o otx2_evdev_adptr.o otx2_tim_evdev.o otx2_evdev_selftest.o otx2_evdev_irq.o 

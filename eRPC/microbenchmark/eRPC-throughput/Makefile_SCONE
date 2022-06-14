@@ -1,0 +1,27 @@
+LIBS = -L$(eRPC_DIR)/build -lerpc -pthread -ldl -L$(eRPC_DIR)/build/root/lib -lnuma  -L$(DPDK_DIR)/lib -Wl,--whole-archive -ldpdk  -Wl,--no-whole-archive -lrte_ethdev -Wl,-lrte_port
+
+.PHONY = all simple_server simple_client
+
+export eRPC_DIR = /home/dimitra/workspace/avocado-microbenchmarks/eRPC-scone
+export DPDK_DIR = /home/dimitra/workspace/avocado-microbenchmarks/eRPC-scone/usr
+export HOME_DIR = /home/dimitra/workspace/avocado-microbenchmarks/network/benchmark_
+
+INCLUDES = -std=c++17 -g -I$(eRPC_DIR)/build/root/include -I$(HOME_DIR)/args_parser -I$(DPDK_DIR)/include/dpdk -I$(eRPC_DIR)/lib -I$(eRPC_DIR)/src -L$(eRPC_DIR)/build/root/lib
+
+SRC_APPS_FILES_PATH=$(HOME_DIR)/simple-apps
+
+SRC_FILES = $(HOME_DIR)/stats/stats.cc
+
+all: dpdk
+
+dpdk: simple_client simple_server
+
+simple_server: 
+	g++ -DERPC_DPDK=true -Wall -Wextra -Wpedantic -Wno-deprecated-declarations -Wno-register -Wno-vla ${INCLUDES} -march=native -include $(eRPC_DIR)/dpdk/x86_64-native-linuxapp-gcc/include/rte_config.h -O3 -W -Wall ${SRC_FILES} ${SRC_APPS_FILES_PATH}/server.cc $(LIBS)  -o server
+
+
+simple_client: 
+	g++ -DERPC_DPDK=true -Wall -Wextra -Wpedantic -Wno-deprecated-declarations -Wno-register -Wno-vla ${INCLUDES} -march=native -include $(eRPC_DIR)/dpdk/x86_64-native-linuxapp-gcc/include/rte_config.h -O3 -W -Wall ${SRC_APPS_FILES_PATH}/client.cc $(LIBS)  -o client
+
+clean:
+	-rm -f client server

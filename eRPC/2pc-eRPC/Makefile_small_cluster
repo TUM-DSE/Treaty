@@ -1,0 +1,59 @@
+export eRPC_dir = $(realpath $(shell pwd)/..)
+export APPS = ${eRPC_dir}/2pc-eRPC/apps/small-cluster
+
+export DPDK = ${eRPC_dir}/dpdk/x86_64-native-linuxapp-gcc
+
+LIBS = -lgflags -lrocksdb -lerpc_nat -lpthread -lnuma -ldl -Wl,--whole-archive -ldpdk -Wl,--no-whole-archive -lrte_ethdev -Wl,-lrte_port
+
+.PHONY = all donna martha
+
+# INCLUDES = -g -Og -std=c++17 -fno-omit-frame-pointer -Wno-unused-parameter -Wno-pedantic -march=native -DRTE_MACHINE_CPUFLAG_SSE -DRTE_MACHINE_CPUFLAG_SSE2 -DRTE_MACHINE_CPUFLAG_SSE3 -D  RTE_MACHINE_CPUFLAG_SSSE3 -DRTE_MACHINE_CPUFLAG_SSE4_1 -DRTE_MACHINE_CPUFLAG_SSE4_2  -I${eRPC_dir}/src -I${DPDK}/include -I${eRPC_dir}/2pc-eRPC/third_party/openssl/include -I${eRPC_dir}/2pc-eRPC/advanced_encryption_library -I${eRPC_dir}/2pc-eRPC/recovery -I${eRPC_dir}/2pc-eRPC/rocksdb/include -I${eRPC_dir}/2pc-eRPC/rocksdb -I${eRPC_dir}/2pc-eRPC/rocksdb/util -I${eRPC_dir}/2pc-eRPC/lib -I${eRPC_dir}/2pc-eRPC -Wno-unused-function -Wno-deprecated-declarations -I${eRPC_dir}/2pc-eRPC/include -I${eRPC_dir}/2pc-eRPC/hashMap/inc -DROCKSDB_PLATFORM_POSIX -DNDEBUG -DSUPER_DEBUGGING #-DDEBUG_2PC -DENCRYPTION
+
+INCLUDES = -g -O3 -std=c++17 -fno-omit-frame-pointer -Wno-unused-parameter -Wno-pedantic -march=native -DRTE_MACHINE_CPUFLAG_SSE -DRTE_MACHINE_CPUFLAG_SSE2 -DRTE_MACHINE_CPUFLAG_SSE3 -D  RTE_MACHINE_CPUFLAG_SSSE3 -DRTE_MACHINE_CPUFLAG_SSE4_1 -DRTE_MACHINE_CPUFLAG_SSE4_2  -I${eRPC_dir}/src -I${DPDK}/include -I${eRPC_dir}/2pc-eRPC/third_party/openssl/include -I${eRPC_dir}/2pc-eRPC/advanced_encryption_library -I${eRPC_dir}/2pc-eRPC/recovery -I/home/dimitra/workspace/rocksdb-5.6-native/include -I${eRPC_dir}/2pc-eRPC -I/home/dimitra/workspace/rocksdb-5.6-native -I/home/dimitra/workspace/rocksdb-5.6-native/util -I${eRPC_dir}/2pc-eRPC/lib -I${eRPC_dir}/2pc-eRPC -Wno-unused-function -Wno-deprecated-declarations -I${eRPC_dir}/2pc-eRPC/include -I${eRPC_dir}/2pc-eRPC/hashMap/inc -DROCKSDB_PLATFORM_POSIX -DNDEBUG -DSUPER_DEBUGGING -DTWO_PHASE_COMMIT -DNO_STORAGE -DNO_ENCRYPTION #-fsanitize=address #-DNO_STORAGE #-DSTORAGE -DENCRYPTION #-DENCRYPTION #-fsanitize=address #-DTPCC_TEST #-DDEBUG_2PC -DENCRYPTION
+
+# _LIBS = -L${eRPC_dir}/build -L${eRPC_dir}/2pc-eRPC/rocksdb -L${eRPC_dir}/2pc-eRPC/third_party/openssl/lib -L${DPDK}/lib
+_LIBS = -L${eRPC_dir}/build -L/home/dimitra/workspace/rocksdb-5.6-native -L${eRPC_dir}/2pc-eRPC/third_party/openssl/lib -L${DPDK}/lib -lfolly -lglog -lfmt
+
+SRC_FILES_PATH=${eRPC_dir}/2pc-eRPC/src
+MAIN_PATH=${eRPC_dir}/2pc-eRPC
+SRC_APPS_FILES_PATH=${eRPC_dir}/2pc-eRPC/apps/small-cluster
+
+SRC_FILES = ${SRC_FILES_PATH}/txn_phases.cc \
+	    ${eRPC_dir}/2pc-eRPC/commit_log/clog.cc\
+	    ${SRC_FILES_PATH}/local_txns.cc \
+	    ${SRC_FILES_PATH}/transactions_info.cc \
+	    ${SRC_FILES_PATH}/termination.cc \
+	    ${SRC_FILES_PATH}/util.cc \
+	    ${SRC_FILES_PATH}/request_handlers.cc \
+	    ${SRC_FILES_PATH}/sample_operations.cc \
+	    ${SRC_FILES_PATH}/safe_functions.cc \
+	    ${eRPC_dir}/2pc-eRPC/recovery/recover.cc \
+	    ${eRPC_dir}/2pc-eRPC/recovery/util.cc \
+	    ${eRPC_dir}/2pc-eRPC/stats/stats.cc\
+	    ${MAIN_PATH}/server_app/message.pb.cc\
+	    ${MAIN_PATH}/server_app/util.cc
+
+LINKING_FLAGS=-lcrypto -ldl -lrt -lpthread `pkg-config --cflags --libs protobuf` -lboost_context -lboost_fiber -lboost_context #-fsanitize=address
+
+all: clean dpdk
+
+dpdk: donna martha rose
+
+donna: 
+	g++ -DERPC_DPDK=true ${INCLUDES} ${SRC_FILES} ${SRC_APPS_FILES_PATH}/donna.cc ${_LIBS} ${LIBS} ${LINKING_FLAGS} -o donna_native
+
+
+martha: 
+	#g++ -DERPC_DPDK=true -DCOLLECT_OPERATIONS_STATISTICS ${INCLUDES} ${SRC_FILES} ${SRC_APPS_FILES_PATH}/martha_correct.cc ${_LIBS} ${LIBS} ${LINKING_FLAGS} -o martha_native
+	g++ -DERPC_DPDK=true ${INCLUDES} ${SRC_FILES} ${SRC_APPS_FILES_PATH}/martha_correct.cc ${_LIBS} ${LIBS} ${LINKING_FLAGS} -o martha_native
+
+rose: 
+	g++ -DERPC_DPDK=true ${INCLUDES} ${SRC_FILES} ${SRC_APPS_FILES_PATH}/rose.cc ${_LIBS} ${LIBS} ${LINKING_FLAGS} -o rose_native
+
+
+
+
+
+clean:
+	#rm -f donna martha
+	#rm -f *_commitLog.txt

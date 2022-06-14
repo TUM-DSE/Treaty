@@ -1,0 +1,59 @@
+export eRPC_dir = $(realpath $(shell pwd)/..)
+export APPS = ${eRPC_dir}/2pc-eRPC/apps/small-cluster
+export ROCKSDB_DIR = /home/dimitra/Treaty-node-dynamic-linking-sgx/code/src/rocksdb
+
+export DPDK = ${eRPC_dir}/dpdk_scone/x86_64-native-linuxapp-gcc
+
+LIBS = -lrocksdb -lerpc -lpthread -lnuma -lgflags -ldl -Wl,--whole-archive -ldpdk -Wl,--no-whole-archive -lrte_ethdev -Wl,-lrte_port
+
+.PHONY = all donna martha rose
+
+#INCLUDES = -I${eRPC_dir}/2pc-eRPC -I/home/dimitra/workspace/protobuf/usr/include -I${ROCKSDB_DIR}/include -I${ROCKSDB_DIR} -I${ROCKSDB_DIR}/util -g -O3 -std=c++17 -fno-omit-frame-pointer -Wno-unused-parameter -Wno-pedantic -march=native -DRTE_MACHINE_CPUFLAG_SSE -DRTE_MACHINE_CPUFLAG_SSE2 -DRTE_MACHINE_CPUFLAG_SSE3 -D  RTE_MACHINE_CPUFLAG_SSSE3 -DRTE_MACHINE_CPUFLAG_SSE4_1 -DRTE_MACHINE_CPUFLAG_SSE4_2  -I${eRPC_dir}/src -I${DPDK}/include -I${eRPC_dir}/2pc-eRPC/third_party/openssl/include -I${eRPC_dir}/2pc-eRPC/advanced_encryption_library -I${eRPC_dir}/2pc-eRPC/recovery -I${eRPC_dir}/2pc-eRPC/rocksdb/include -I${eRPC_dir}/2pc-eRPC/rocksdb -I${eRPC_dir}/2pc-eRPC/rocksdb/util -I${eRPC_dir}/2pc-eRPC/lib -I${eRPC_dir}/2pc-eRPC -Wno-unused-function -Wno-deprecated-declarations -I${eRPC_dir}/2pc-eRPC/include -I${eRPC_dir}/2pc-eRPC/hashMap/inc -DROCKSDB_PLATFORM_POSIX -DSCONE -DNDEBUG -DSUPER_DEBUGGING -DTWO_PHASE_COMMIT -I/usr/local/include/botan-2 -I/home/dimitra/Treaty-node-dynamic-linking-sgx/code/src/botan/build/include -I/home/dimitra/Treaty-node-dynamic-linking-sgx/code/src/botan/build/include/botan-2 -I/usr/local/include -I/usr/local/ssl/include -DGFLAGS -O3 -I/home/dimitra/workspace/protobuf/usr/include -s -DUSE_BOOST_FIBERS -I/home/dimitra/Treaty-node-dynamic-linking-sgx/code/src/rocksdb/merkle/include -DSTORAGE -DSCONE_MMAP -DENCRYPTION#-fsanitize=address #-DDEBUG_2PC -DENCRYPTION
+
+INCLUDES = -I/home/dimitra/workspace/boost_1_69_0 -I${eRPC_dir}/2pc-eRPC -I/home/dimitra/workspace/protobuf/usr/include -I${ROCKSDB_DIR}/include -I${ROCKSDB_DIR} -I${ROCKSDB_DIR}/util -g -O3 -std=c++17 -fno-omit-frame-pointer -Wno-unused-parameter -Wno-pedantic -march=native -DRTE_MACHINE_CPUFLAG_SSE -DRTE_MACHINE_CPUFLAG_SSE2 -DRTE_MACHINE_CPUFLAG_SSE3 -D  RTE_MACHINE_CPUFLAG_SSSE3 -DRTE_MACHINE_CPUFLAG_SSE4_1 -DRTE_MACHINE_CPUFLAG_SSE4_2  -I${eRPC_dir}/src -I${DPDK}/include -I${eRPC_dir}/2pc-eRPC/third_party/openssl/include -I${eRPC_dir}/2pc-eRPC/advanced_encryption_library -I${eRPC_dir}/2pc-eRPC/recovery -I${eRPC_dir}/2pc-eRPC/rocksdb/include -I${eRPC_dir}/2pc-eRPC/rocksdb -I${eRPC_dir}/2pc-eRPC/rocksdb/util -I${eRPC_dir}/2pc-eRPC/lib -I${eRPC_dir}/2pc-eRPC -Wno-unused-function -Wno-deprecated-declarations -I${eRPC_dir}/2pc-eRPC/include -I${eRPC_dir}/2pc-eRPC/hashMap/inc -DROCKSDB_PLATFORM_POSIX -DSCONE -DNDEBUG -DSUPER_DEBUGGING -DTWO_PHASE_COMMIT -I/home/dimitra/workspace/boost_1_69_0 -I/usr/local/include/botan-2 -I/home/dimitra/Treaty-node-dynamic-linking-sgx/code/src/botan/build/include -I/home/dimitra/Treaty-node-dynamic-linking-sgx/code/src/botan/build/include/botan-2 -I/usr/local/include -I/usr/local/ssl/include -DGFLAGS -O3 -I/home/dimitra/workspace/protobuf/usr/include -s -DUSE_BOOST_FIBERS -I/home/dimitra/Treaty-node-dynamic-linking-sgx/code/src/rocksdb/merkle/include -DSTORAGE -DSCONE_MMAP -DENCRYPTION#-DENCRYPTION  -DENCRYPTED_SSTABLES -DOPENSSL_ENCRYPTION -DMEMTABLE_ENCRYPTION -DTEST_ENCRYPTION #-DROLLBACK_PROTECTION #-fsanitize=address #-DDEBUG_2PC -DENCRYPTION
+
+
+_LIBS = -L${eRPC_dir}/build -L${eRPC_dir}/2pc-eRPC/rocksdb -L${eRPC_dir}/2pc-eRPC/third_party/openssl/lib -L${DPDK}/lib -L/home/dimitra/workspace/protobuf/usr/lib -L${ROCKSDB_DIR} 
+
+SRC_FILES_PATH=${eRPC_dir}/2pc-eRPC/src
+SRC_APPS_FILES_PATH=${eRPC_dir}/2pc-eRPC/apps/small-cluster
+MAIN_PATH=${eRPC_dir}/2pc-eRPC
+
+SRC_FILES = ${SRC_FILES_PATH}/txn_phases.cc \
+	    ${eRPC_dir}/2pc-eRPC/commit_log/clog.cc\
+	    ${SRC_FILES_PATH}/local_txns.cc \
+	    ${SRC_FILES_PATH}/transactions_info.cc \
+	    ${SRC_FILES_PATH}/termination.cc \
+	    ${SRC_FILES_PATH}/util.cc \
+	    ${SRC_FILES_PATH}/request_handlers.cc \
+	    ${SRC_FILES_PATH}/sample_operations.cc \
+	    ${SRC_FILES_PATH}/safe_functions.cc \
+	    ${eRPC_dir}/2pc-eRPC/recovery/recover.cc \
+	    ${eRPC_dir}/2pc-eRPC/recovery/util.cc \
+	    ${eRPC_dir}/2pc-eRPC/stats/stats.cc \
+			${MAIN_PATH}/server_app_scone/message.pb.cc \
+			${MAIN_PATH}/server_app_scone/util.cc
+
+LINKING_FLAGS=-lcrypto -ldl -lrt -lpthread -lprotobuf /home/dimitra/workspace/boost_1_69_0/bin.v2/libs/fiber/build/gcc-7.5.0/release/link-static/threading-multi/visibility-hidden/libboost_fiber.a /home/dimitra/workspace/boost_1_69_0/bin.v2/libs/context/build/gcc-7.5.0/release/link-static/threading-multi/visibility-hidden/libboost_context.a -L/usr/local/ssl/lib -L/home/dimitra/Treaty-node-dynamic-linking-sgx/code/src/botan -lgflags -lcrypto -lbotan-2 #-lboost_context -lboost_fiber #-fsanitize=address
+
+#LINKING_FLAGS=-lcrypto -ldl -lrt -lpthread -lprotobuf -L/usr/local/ssl/lib -L/home/dimitra/Treaty-node-dynamic-linking-sgx/code/src/botan -lgflags -lcrypto -lbotan-2 -lboost_context -lboost_fiber #-fsanitize=address
+all: clean dpdk
+
+dpdk: donna martha rose
+
+donna: 
+	g++ -DERPC_DPDK=true ${INCLUDES} ${SRC_FILES} ${SRC_APPS_FILES_PATH}/donna.cc ${_LIBS} ${LIBS} ${LINKING_FLAGS} -o donna_scone_big
+
+
+martha: 
+	g++ -DERPC_DPDK=true ${INCLUDES} ${SRC_FILES} ${SRC_APPS_FILES_PATH}/martha_correct.cc ${_LIBS} ${LIBS} ${LINKING_FLAGS} -o martha_scone_big
+
+rose: 
+	g++ -DERPC_DPDK=true ${INCLUDES} ${SRC_FILES} ${SRC_APPS_FILES_PATH}/rose.cc ${_LIBS} ${LIBS} ${LINKING_FLAGS} -o rose_scone_big
+
+
+
+
+clean:
+	#rm -f donna martha
+	#rm -f *_commitLog.txt

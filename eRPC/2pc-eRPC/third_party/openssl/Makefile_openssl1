@@ -1,0 +1,37 @@
+export ROOT = $(realpath $(shell pwd))
+export DOWNLOAD=$(ROOT)/download
+export SRC=download
+export INST=${ROOT}
+export SSL=$(SRC)/openssl
+export STATUS=${ROOT}
+
+PROG = openssl
+VERSION = 1.0.2l
+PKG = $(PROG)-$(VERSION).tar.gz
+
+.PHONY: all clean
+
+STATUS_SSL = $(STATUS)/openssl
+
+all: $(STATUS_SSL)/install
+
+$(STATUS_SSL)/install: $(STATUS_SSL)/build
+	$(MAKE) -C $(SSL) install
+
+$(STATUS_SSL)/build: $(STATUS_SSL)/config
+	$(MAKE) -C $(SSL)
+
+$(STATUS_SSL)/config: | $(SSL)
+	cd $(SSL) && \
+	./Configure --prefix=$(INST) no-threads no-shared no-dso linux-x86_64
+
+$(SSL): $(DOWNLOAD)/$(PKG)
+	mkdir -p $@
+	tar xzvf $< -C $@ --strip-components=1
+
+$(DOWNLOAD)/$(PKG):
+	wget https://www.openssl.org/source/$(PKG) --directory-prefix=$(DOWNLOAD)
+
+clean:
+	-rm -rf $(SSL)
+	-rm -rf $(STATUS_SSL)

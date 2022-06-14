@@ -1,0 +1,24 @@
+export ROOT_DIR=$(realpath $(shell pwd)/..)
+export DPDK=${ROOT_DIR}/dpdk_scone
+export INST=${DPDK}/usr
+export CC=gcc
+export LIBRARY_PATH
+
+.PHONY: all clean 
+
+FLAGS ="-D__USE_MISC -D_GNU_SOURCE -Wno-cast-qual -Wno-error -Wno-int-conversion -Wno-unused-parameter -Wno-strict-prototypes -Wno-old-style-definition -Wno-implicit-function-declaration -Wno-nested-externs -Wno-maybe-uninitialized -Wno-unused-function -Wno-array-bounds -Wno-stringop-overflow -Wno-pointer-to-int-cast -I${ROOT_DIR}/build/root/include -I${ROOT_DIR}/build/root/include/sys -I${DPDK} -include ${DPDK}/scone/scone_cpuid.h -fPIC"
+  
+  
+all: install
+  
+install:
+	$(MAKE) -C $(DPDK) EXTRA_CFLAGS=$(FLAGS) EXTRA_CXXFLAGS=$(FLAGS) HOST_EXTRA_CFLAGS=$(FLAGS) HOST_EXTRA_CXXFLAGS=$(FLAGS) CC=$(CC) HOSTCC=$(CC) EXTRA_LDFLAGS=$(LFLAGS) T=x86_64-native-linuxapp-gcc DESTDIR=${INST} install V=1
+
+
+clean:
+	$(MAKE) -C $(DPDK) clean
+	-rm -rf -f $(DPDK)/x86_64-native-linuxapp-gcc
+	-rm -rf -f $(DPDK)/usr/lib/*
+	-rm -rf -f $(DPDK)/usr/include/*
+
+

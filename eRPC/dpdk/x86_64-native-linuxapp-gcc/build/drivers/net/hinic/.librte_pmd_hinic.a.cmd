@@ -1,0 +1,1 @@
+cmd_librte_pmd_hinic.a = ar crDs librte_pmd_hinic.a hinic_pmd_api_cmd.o hinic_pmd_cfg.o hinic_pmd_cmdq.o hinic_pmd_eqs.o hinic_pmd_hwdev.o hinic_pmd_hwif.o hinic_pmd_mgmt.o hinic_pmd_niccfg.o hinic_pmd_nicio.o hinic_pmd_wq.o hinic_pmd_ethdev.o hinic_pmd_rx.o hinic_pmd_tx.o 

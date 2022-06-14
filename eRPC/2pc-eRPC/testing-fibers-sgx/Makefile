@@ -1,0 +1,32 @@
+export eRPC_dir = $(realpath $(shell pwd)/../..)
+
+
+LIBS = -lrocksdb
+
+.PHONY = all fibers_test_scone
+
+INCLUDES = -I${eRPC_dir}/2pc-eRPC -I/home/dimitra/workspace/protobuf/usr/include -I/home/dimitra/workspace/rocksdb-5.6-native_scone/include -I/home/dimitra/workspace/rocksdb-5.6-native_scone -I/home/dimitra/workspace/rocksdb-5.6-native_scone/util -g -O3 -std=c++17 -fno-omit-frame-pointer -Wno-unused-parameter -Wno-pedantic -march=native -DRTE_MACHINE_CPUFLAG_SSE -DRTE_MACHINE_CPUFLAG_SSE2 -DRTE_MACHINE_CPUFLAG_SSE3 -D  RTE_MACHINE_CPUFLAG_SSSE3 -DRTE_MACHINE_CPUFLAG_SSE4_1 -DRTE_MACHINE_CPUFLAG_SSE4_2  -I${eRPC_dir}/src -I${DPDK}/include -I${eRPC_dir}/2pc-eRPC/third_party/openssl/include -I${eRPC_dir}/2pc-eRPC/advanced_encryption_library -I${eRPC_dir}/2pc-eRPC/recovery -I${eRPC_dir}/2pc-eRPC/rocksdb/include -I${eRPC_dir}/2pc-eRPC/rocksdb -I${eRPC_dir}/2pc-eRPC/rocksdb/util -I${eRPC_dir}/2pc-eRPC/lib -I${eRPC_dir}/2pc-eRPC -Wno-unused-function -Wno-deprecated-declarations -I${eRPC_dir}/2pc-eRPC/include -I${eRPC_dir}/2pc-eRPC/hashMap/inc -DROCKSDB_PLATFORM_POSIX -DSCONE -DNDEBUG -DSUPER_DEBUGGING -DTWO_PHASE_COMMIT -fsanitize=address#-DDEBUG_2PC -DENCRYPTION
+
+_LIBS = -L${eRPC_dir}/build -L${eRPC_dir}/2pc-eRPC/rocksdb -L${eRPC_dir}/2pc-eRPC/third_party/openssl/lib -L${DPDK}/lib -L/home/dimitra/workspace/protobuf/usr/lib -L/home/dimitra/workspace/rocksdb-5.6-native_scone
+
+SRC_FILES_PATH=${eRPC_dir}/2pc-eRPC/src
+SRC_APPS_FILES_PATH=${eRPC_dir}/2pc-eRPC/apps/small-cluster
+MAIN_PATH=${eRPC_dir}/2pc-eRPC
+
+SRC_FILES = ${SRC_FILES_PATH}/txn_phases.cc \
+	    ${eRPC_dir}/2pc-eRPC/commit_log/clog.cc\
+	    ${SRC_FILES_PATH}/local_txns.cc 
+
+LINKING_FLAGS=-lcrypto -ldl -lrt -lpthread -lprotobuf -lboost_context -lboost_fiber -fsanitize=address
+
+all: clean dpdk
+
+dpdk: fibers_test_scone
+
+fibers_test_scone:
+	g++ ${INCLUDES} ${SRC_FILES} fibers_db_bench.cpp ${_LIBS} ${LIBS} ${LINKING_FLAGS} -o fibers_test_scone
+
+
+
+clean:
+	rm -f fibers_test_scone
