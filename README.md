@@ -9,4 +9,4 @@ We have not tested it with the publicly available version.
 
 ## Getting started guide 
 
-// TODO
+Please check [here](setup.md)
